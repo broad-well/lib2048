@@ -1,0 +1,37 @@
+{
+  "name": "lib2048",
+  "version": "0.0.1",
+  "description": "A library of the 2048 tile game",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/broad-well/lib2048.git"
+  },
+  "keywords": [
+    "2048",
+    "typescript",
+    "gulp"
+  ],
+  "author": "Michael Peng <michael@mcmoo.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/broad-well/lib2048/issues"
+  },
+  "homepage": "https://github.com/broad-well/lib2048#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-tslint": "^7.1.0",
+    "gulp-typedoc": "^2.0.2",
+    "gulp-typescript": "^3.1.6",
+    "gulp-uglify": "^2.1.2",
+    "tslint": "^5.0.0",
+    "typedoc": "^0.5.10",
+    "typescript": "^2.2.2"
+  }
+}
