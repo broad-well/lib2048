@@ -1,0 +1,16 @@
+{
+    "rules": {
+        "class-name": true,
+        "curly": true,
+        "new-parens": true,
+        "cyclomatic-complexity": [
+            true,
+            25
+        ],
+        "no-trailing-whitespace": true,
+        "quotemark": [
+            true,
+            "single"
+        ]
+    }
+}
