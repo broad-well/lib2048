@@ -2,85 +2,69 @@
 // 
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Defines the side length of the matrix, or grid.
  * Following the 2048 game itself, the default value is 4.
  */
-export const MATRIX_SIZE = 4;
-
-export class Cell {
-    protected value: number;
-
-    constructor(num: number) {
+exports.MATRIX_SIZE = 4;
+class Cell {
+    constructor(num) {
         this.value = num;
     }
-
-    public isEmpty(): boolean {
+    isEmpty() {
         return this.value === 0;
     }
-
-    public val(): number {
+    val() {
         return this.value;
     }
-
-    public equals(other: Cell): boolean {
+    equals(other) {
         return this.val() === other.val();
     }
-
-    public increment(): void {
+    increment() {
         this.value++;
     }
-
-    public clear(): void {
+    clear() {
         this.value = 0;
     }
-
-    public clone(): Cell {
+    clone() {
         return new Cell(this.value);
     }
 }
-
-export class MatrixArray extends Array<Cell> {
-    protected static RIGHT = 1;
-    protected static LEFT = -1;
-
-    constructor(cells: Cell[]) {
+exports.Cell = Cell;
+class MatrixArray extends Array {
+    constructor(cells) {
         super(...cells);
     }
-
-    public static from(values: number[]): MatrixArray {
+    static from(values) {
         return new MatrixArray(values.map(num => new Cell(num)));
     }
-
-    protected findFarthestIndex(index: number, vec: number): number {
+    findFarthestIndex(index, vec) {
         let farthest = index;
         while (this[farthest + vec].isEmpty()) {
             farthest += vec;
         }
         return farthest;
     }
-
-    public isIndexInRange(index: number): boolean {
+    isIndexInRange(index) {
         return index >= 0 && index < this.length;
     }
-
-    public rotateRight() {
+    rotateRight() {
         // In order to prevent newly merged cells from being merged again, a list of new cell indexes is implemented.
-        let newCells: number[] = [];
-
+        let newCells = [];
         // Traverse through the elements from right to left, ignoring the rightmost because it cannot be moved further
-        for (let i = MATRIX_SIZE - 2; i >= 0; i--) {
+        for (let i = exports.MATRIX_SIZE - 2; i >= 0; i--) {
             const farIndex = this.findFarthestIndex(i, MatrixArray.RIGHT);
             const nextCell = farIndex + MatrixArray.RIGHT;
-            
             // Check merge
             if (this.isIndexInRange(nextCell) && this[nextCell].equals(this[i]) && !newCells.includes(nextCell)) {
                 // Mergeable
                 this[nextCell].increment();
                 this[i].clear();
                 newCells.push(nextCell);
-            } else {
+            }
+            else {
                 // Just move the cell
                 this[farIndex] = this[i].clone();
                 this[i].clear();
@@ -88,3 +72,9 @@ export class MatrixArray extends Array<Cell> {
         }
     }
 }
+MatrixArray.RIGHT = 1;
+MatrixArray.LEFT = -1;
+
+let test = MatrixArray.from([3,3,3,3]);
+test.rotateRight();
+console.log(test);
