@@ -3,7 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import { MatrixArray } from '../game/grid';
+import { MatrixArray, Cell } from '../game/grid';
+import * as assert from 'assert';
 
 function arraysEqual<T>(a: T[], b: T[]): boolean {
     if (a.length !== b.length) {
@@ -17,20 +18,29 @@ function arraysEqual<T>(a: T[], b: T[]): boolean {
     return true;
 }
 
-function expectEqual(vector: number, start: number[], end: number[]) {
+function expectEqual(vector: number, start: number[], end: number[], score?: number) {
     const tempMatrixArray = MatrixArray.from(start);
-    tempMatrixArray.rotate(vector);
+    const addScore = tempMatrixArray.rotate(vector);
     const result = tempMatrixArray.serialize();
-    if (!arraysEqual(result, end)) {
-        console.error(`Assertion failure: expected ${end}, actual ${result}`);
-        console.trace();
+    assert.deepEqual(result, end, 'MatrixArray rotation result unexpected');
+    if (score !== undefined) {
+        assert.equal(addScore, score, 'MatrixArray rotation additional score unexpected');
     }
 }
 
-expectEqual(MatrixArray.RIGHT, [2, 2, 2, 2], [0, 0, 3, 3]);
-expectEqual(MatrixArray.RIGHT, [0, 0, 1, 1], [0, 0, 0, 2]);
-expectEqual(MatrixArray.RIGHT, [0, 2, 2, 1], [0, 0, 3, 1]);
-expectEqual(MatrixArray.RIGHT, [0, 3, 3, 3], [0, 0, 3, 4]);
-expectEqual(MatrixArray.LEFT, [0, 0, 2, 2], [3, 0, 0, 0]);
-expectEqual(MatrixArray.LEFT, [0, 2, 2, 2], [3, 2, 0, 0]);
-expectEqual(MatrixArray.LEFT, [0, 4, 4, 2], [5, 2, 0, 0]);
+expectEqual(MatrixArray.RIGHT, [2, 2, 2, 2], [0, 0, 3, 3], 16);
+expectEqual(MatrixArray.RIGHT, [0, 0, 1, 1], [0, 0, 0, 2], 4);
+expectEqual(MatrixArray.RIGHT, [0, 2, 2, 1], [0, 0, 3, 1], 8);
+expectEqual(MatrixArray.RIGHT, [0, 3, 3, 3], [0, 0, 3, 4], 16);
+expectEqual(MatrixArray.LEFT, [0, 0, 2, 2], [3, 0, 0, 0], 8);
+expectEqual(MatrixArray.LEFT, [0, 2, 2, 2], [3, 2, 0, 0], 8);
+expectEqual(MatrixArray.LEFT, [0, 4, 4, 2], [5, 2, 0, 0], 32);
+
+assert.deepEqual(MatrixArray.newEmpty(), MatrixArray.from([0, 0, 0, 0]));
+
+// Test: distinct Cell objects in MatrixArray from newEmpty
+{
+    let empty = MatrixArray.newEmpty();
+    empty[0] = new Cell(2);
+    assert.deepEqual(empty, MatrixArray.from([2, 0, 0, 0]));
+}

@@ -145,7 +145,11 @@ export class MatrixArray extends Array<Cell> {
      *
      */
     public static newEmpty(): MatrixArray {
-        return new MatrixArray(new Array(MATRIX_SIZE).map(() => new Cell(0)));
+        let cellArray: Cell[] = [];
+        for (let i = 0; i < MATRIX_SIZE; ++i) {
+            cellArray.push(new Cell(0));
+        }
+        return new MatrixArray(cellArray);
     }
 
     /**

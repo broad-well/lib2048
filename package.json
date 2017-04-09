@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/broad-well/lib2048#readme",
   "devDependencies": {
+    "assert": "^1.4.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-tslint": "^7.1.0",
