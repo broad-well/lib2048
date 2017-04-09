@@ -26,17 +26,18 @@
   "homepage": "https://github.com/broad-well/lib2048#readme",
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
     "gulp-tslint": "^7.1.0",
     "gulp-typedoc": "^2.0.2",
     "gulp-typescript": "^3.1.6",
     "gulp-uglify": "^2.1.2",
-    "junit": "^1.4.9",
     "tslint": "^5.0.0",
     "typedoc": "^0.5.10",
     "typescript": "^2.2.2"
   },
   "dependencies": {
     "@types/node": "^7.0.12",
+    "babel": "^6.23.0",
     "tslint": "^5.0.0",
     "typescript": "^2.2.2"
   }

@@ -1,3 +1,8 @@
+// Copyright (c) 2017 Michael P
+// 
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 const gulp = require('gulp');
 
 // TypeScript
@@ -7,3 +12,31 @@ const tsdoc = require('gulp-typedoc');
 
 // Optimization
 const uglify = require('gulp-uglify');
+
+// Legacy
+const babel = require('gulp-babel');
+
+gulp.task('lint', function() {
+    return gulp.src('src/**/*.ts')
+        .pipe(tslint({
+            configuration: 'tslint.json',
+        }))
+        .pipe(tslint.report());
+});
+
+gulp.task('document', function() {
+    return gulp.src(['src/**/*.ts', '!src/test/*'])
+        .pipe(tsdoc({
+            out: './docs',
+            module: 'commonjs',
+            target: 'es6',
+        }));
+});
+
+const tsProject = ts.createProject('tsconfig.json');
+gulp.task('compile', function() {
+    const tsResult = gulp.src('src/**/*.ts')
+        .pipe(tsProject());
+
+    return tsResult.js.pipe(gulp.dest('out'));
+});

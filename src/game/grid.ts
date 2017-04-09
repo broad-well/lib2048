@@ -10,14 +10,23 @@
 export const MATRIX_SIZE = 4;
 
 export class Cell {
+
+    /**
+     * Creates a new empty cell and returns it
+     *
+     * @returns {Cell} The fresh and empty Cell
+     *
+     */
+    public static newEmpty(): Cell {
+        return new Cell(0);
+    }
+
     /**
      * The numeric value of `log2` the display value of the cell.
      *
      * For example, this would be 5 if the displayed value is 2^5, or 32.
      *
-     * @protected
      * @type {number}
-     * @memberOf Cell
      */
     protected value: number;
 
@@ -25,7 +34,6 @@ export class Cell {
      * Creates an instance of Cell with the given number as its {@see value}.
      * @param {number} num The numeric value to put into `this.value`
      *
-     * @memberOf Cell
      */
     constructor(num: number) {
         this.value = num;
@@ -36,7 +44,6 @@ export class Cell {
      *
      * @returns {boolean} `true` if this is empty, otherwise `false`
      *
-     * @memberOf Cell
      */
     public isEmpty(): boolean {
         return this.value === 0;
@@ -47,7 +54,6 @@ export class Cell {
      *
      * @returns {number} The property `value` of this cell
      *
-     * @memberOf Cell
      */
     public val(): number {
         return this.value;
@@ -59,7 +65,6 @@ export class Cell {
      * @param {Cell} other The other cell to compare this cell to
      * @returns {boolean} `true` if this cell's value equals the other cell's value, otherwise `false`
      *
-     * @memberOf Cell
      */
     public equals(other: Cell): boolean {
         return this.val() === other.val();
@@ -70,7 +75,6 @@ export class Cell {
      *
      * _Call this when another cell merges with this cell._
      *
-     * @memberOf Cell
      */
     public increment(): void {
         this.value++;
@@ -79,7 +83,6 @@ export class Cell {
     /**
      * Clears the value of this cell, making it empty.
      *
-     * @memberOf Cell
      */
     public clear(): void {
         this.value = 0;
@@ -90,7 +93,6 @@ export class Cell {
      *
      * @returns {Cell} The cloned Cell
      *
-     * @memberOf Cell
      */
     public clone(): Cell {
         return new Cell(this.value);
@@ -103,7 +105,6 @@ export class MatrixArray extends Array<Cell> {
      *
      * @static
      *
-     * @memberOf MatrixArray
      */
     public static RIGHT = 1;
 
@@ -112,7 +113,6 @@ export class MatrixArray extends Array<Cell> {
      *
      * @static
      *
-     * @memberOf MatrixArray
      */
     public static LEFT = -1;
 
@@ -120,7 +120,6 @@ export class MatrixArray extends Array<Cell> {
      * Creates an instance of MatrixArray with an array of Cells.
      * @param {Cell[]} cells The array of Cells to create this MatrixArray with
      *
-     * @memberOf MatrixArray
      */
     constructor(cells: Cell[]) {
         super(...cells);
@@ -133,10 +132,20 @@ export class MatrixArray extends Array<Cell> {
      * @param {number[]} values The number array to create this MatrixArray with
      * @returns {MatrixArray} The created object
      *
-     * @memberOf MatrixArray
      */
     public static from(values: number[]): MatrixArray {
         return new MatrixArray(values.map(num => new Cell(num)));
+    }
+
+    /**
+     * Creates a new `MatrixArray` with size as `MATRIX_SIZE` and all Cells empty.
+     *
+     * @static
+     * @returns {MatrixArray} The fresh `MatrixArray`
+     *
+     */
+    public static newEmpty(): MatrixArray {
+        return new MatrixArray(new Array(MATRIX_SIZE).map(() => new Cell(0)));
     }
 
     /**
@@ -150,7 +159,6 @@ export class MatrixArray extends Array<Cell> {
      * @param {number} vec Vector to indicate the direction of the traversal; 1 for RIGHT, -1 for LEFT
      * @returns {number} The last empty cell in the direction given by the vector from the given starting point, or the given index if there is no empty cell in the given direction
      *
-     * @memberOf MatrixArray
      */
     protected findFarthestIndex(index: number, vec: number): number {
         let farthest = index;
@@ -166,7 +174,6 @@ export class MatrixArray extends Array<Cell> {
      * @param {number} index Index to check bounds of
      * @returns {boolean} True if index is in range of this array, false otherwise
      *
-     * @memberOf MatrixArray
      */
     public isIndexInRange(index: number): boolean {
         return index >= 0 && index < this.length;
@@ -178,7 +185,6 @@ export class MatrixArray extends Array<Cell> {
      * @param {number} vector The direction of rotation
      * @returns {number[]} An array of indexes to iterate through
      *
-     * @memberOf MatrixArray
      */
     public buildTraversals(vector: number): number[] {
         if (vector === MatrixArray.RIGHT) {
@@ -196,12 +202,12 @@ export class MatrixArray extends Array<Cell> {
      * _Expected behavior: `[0, 0, 2, 2].rotate(1)` becomes `[0, 0, 0, 3]`_
      *
      * @param {number} vector Direction to rotate
-     *
-     * @memberOf MatrixArray
+     * @returns {number} The additional score gained from merging in this rotation
      */
-    public rotate(vector: number) {
+    public rotate(vector: number): number {
         // In order to prevent newly merged cells from being merged again, a list of new cell indexes is implemented.
         let newCells: number[] = [];
+        let addScore = 0;
 
         // Traverse through the elements from right to left, ignoring the rightmost because it cannot be moved further
         for (let i of this.buildTraversals(vector)) {
@@ -209,35 +215,37 @@ export class MatrixArray extends Array<Cell> {
             const nextCell = farIndex + vector;
 
             // Check merge
-            if (this.isIndexInRange(nextCell) && this[nextCell].equals(this[i]) && !newCells.includes(nextCell)) {
+            if (this.isIndexInRange(nextCell) && this[nextCell].equals(this[i]) && newCells.indexOf(nextCell) === -1) {
                 // Mergeable
                 this[nextCell].increment();
                 this[i].clear();
                 newCells.push(nextCell);
+                addScore += 2 ** this[nextCell].val();
             } else if (farIndex !== i) {
                 // Just move the cell
                 this[farIndex] = this[i].clone();
                 this[i].clear();
             }
         }
+        return addScore;
     }
 
     /**
      * Rotates this MatrixArray to the right (1) using `rotate()`.
      *
-     * @memberOf MatrixArray
+     * @returns {number} The additional score gained from merging in this rotation
      */
-    public rotateRight() {
-        this.rotate(MatrixArray.RIGHT);
+    public rotateRight(): number {
+        return this.rotate(MatrixArray.RIGHT);
     }
 
     /**
      * Rotates this MatrixArray to the left (-1) using `rotate()`.
      *
-     * @memberOf MatrixArray
+     * @returns {number} The additional score gained from merging in this rotation
      */
-    public rotateLeft() {
-        this.rotate(MatrixArray.LEFT);
+    public rotateLeft(): number {
+        return this.rotate(MatrixArray.LEFT);
     }
 
     /**
@@ -245,7 +253,6 @@ export class MatrixArray extends Array<Cell> {
      *
      * @returns {number[]} The serialization of this array
      *
-     * @memberOf MatrixArray
      */
     public serialize(): number[] {
         return Array.from(this).map(cell => cell.val());
