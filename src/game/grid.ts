@@ -42,8 +42,8 @@ export class Cell {
 }
 
 export class MatrixArray extends Array<Cell> {
-    protected static RIGHT = 1;
-    protected static LEFT = -1;
+    public static RIGHT = 1;
+    public static LEFT = -1;
 
     constructor(cells: Cell[]) {
         super(...cells);
@@ -55,7 +55,7 @@ export class MatrixArray extends Array<Cell> {
 
     protected findFarthestIndex(index: number, vec: number): number {
         let farthest = index;
-        while (this[farthest + vec].isEmpty()) {
+        while (this.isIndexInRange(farthest + vec) && this[farthest + vec].isEmpty()) {
             farthest += vec;
         }
         return farthest;
@@ -65,14 +65,24 @@ export class MatrixArray extends Array<Cell> {
         return index >= 0 && index < this.length;
     }
 
-    public rotateRight() {
+    public buildTraversals(vector: number): number[] {
+        if (vector === MatrixArray.RIGHT) {
+            // this.length - 2 to 0
+            return [...Array(this.length).keys()].reverse().slice(1);
+        } else {
+            // 1 to this.length - 1
+            return [...Array(this.length).keys()].slice(1);
+        }
+    }
+
+    public rotate(vector: number) {
         // In order to prevent newly merged cells from being merged again, a list of new cell indexes is implemented.
         let newCells: number[] = [];
 
         // Traverse through the elements from right to left, ignoring the rightmost because it cannot be moved further
-        for (let i = MATRIX_SIZE - 2; i >= 0; i--) {
-            const farIndex = this.findFarthestIndex(i, MatrixArray.RIGHT);
-            const nextCell = farIndex + MatrixArray.RIGHT;
+        for (let i of this.buildTraversals(vector)) {
+            const farIndex = this.findFarthestIndex(i, vector);
+            const nextCell = farIndex + vector;
             
             // Check merge
             if (this.isIndexInRange(nextCell) && this[nextCell].equals(this[i]) && !newCells.includes(nextCell)) {
@@ -86,5 +96,17 @@ export class MatrixArray extends Array<Cell> {
                 this[i].clear();
             }
         }
+    }
+
+    public rotateRight() {
+        this.rotate(MatrixArray.RIGHT);
+    }
+    
+    public rotateLeft() {
+        this.rotate(MatrixArray.LEFT);
+    }
+
+    public serialize(): number[] {
+        return Array.from(this).map(cell => cell.val());
     }
 }
