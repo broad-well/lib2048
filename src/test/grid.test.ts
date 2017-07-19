@@ -6,18 +6,6 @@
 import { MatrixArray, Cell } from '../game/grid';
 import * as assert from 'assert';
 
-function arraysEqual<T>(a: T[], b: T[]): boolean {
-    if (a.length !== b.length) {
-        return false;
-    }
-    for (let i = 0; i < a.length; ++i) {
-        if (a[i] != b[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
 function expectEqual(vector: number, start: number[], end: number[], score?: number) {
     const tempMatrixArray = MatrixArray.from(start);
     const addScore = tempMatrixArray.rotate(vector);
@@ -43,4 +31,12 @@ assert.deepEqual(MatrixArray.newEmpty(), MatrixArray.from([0, 0, 0, 0]));
     let empty = MatrixArray.newEmpty();
     empty[0] = new Cell(2);
     assert.deepEqual(empty, MatrixArray.from([2, 0, 0, 0]));
+}
+
+// Test: Cell.clone() creates new distinct copy
+{
+    const cell1 = new Cell(1);
+    const cell2 = cell1.clone();
+    cell2.increment();
+    assert.notDeepEqual(cell2, cell1, 'Cell.clone() does not create distinct copy');
 }

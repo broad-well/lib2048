@@ -104,17 +104,19 @@ export class MatrixArray extends Array<Cell> {
      * Rightward vector for when traversing through arrays.
      *
      * @static
+     * @readonly
      *
      */
-    public static RIGHT = 1;
+    public static readonly RIGHT = 1;
 
     /**
      * Leftward vector for when traversing through arrays.
      *
      * @static
+     * @readonly
      *
      */
-    public static LEFT = -1;
+    public static readonly LEFT = -1;
 
     /**
      * Creates an instance of MatrixArray with an array of Cells.
@@ -262,3 +264,8 @@ export class MatrixArray extends Array<Cell> {
         return Array.from(this).map(cell => cell.val());
     }
 }
+
+export type Coordinate = {
+    x: number,
+    y: number
+};
