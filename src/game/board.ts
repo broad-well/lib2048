@@ -6,6 +6,9 @@
 import * as grid from './grid';
 import utils from '../util';
 
+/**
+ * A type to represent a serialized board for transportation.
+ */
 export type SerializedBoard = {
     rows: number[][],
     score: number,
@@ -56,5 +59,4 @@ export default class Board {
         return output;
     }
 
-    
 }
