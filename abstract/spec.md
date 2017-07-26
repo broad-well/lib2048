@@ -21,8 +21,13 @@
 - `CLI` _(provides an interface to `GameEmu` for human players)_
     - `InputManager` _(Deals with the Node.js Console input API)_
     - `GameWrapper` _(Manages everything other than board depiction)_
-    - `BoardPrinter` _(Formats the board grid into human-readable cells)_
+    - `BoardPrinter` _(Formats the board grid into human-readable cells in the console)_
 
-- `AI`
+- `AI` _(Implements several Artificial Intelligence algorithms that apply to 2048)_
+    - `Expectimax` _(An algorithm)_
+    - `ABPruning` _(Alpha-Beta Pruning, based on Minimax)_
+    - `ML` _(Machine Learning)_
+        - `NeuralNet` _(A ML model)_
 
-`TODO: Complete Module Structures`
+Note that more AI submodules are to be added in the future.
+
