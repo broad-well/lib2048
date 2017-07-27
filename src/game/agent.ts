@@ -31,10 +31,11 @@ export enum GameState {
  * @interface GameAgent
  */
 export interface GameAgent {
-    move(direction: Direction): boolean;
+    move(direction: Direction): void;
     getGameState(): GameState;
     getScore(): number;
     getCellAt(coord: Coordinate): Cell;
+    getCells(): Cell[][];
 }
 
 export default GameAgent;

@@ -5,14 +5,14 @@
 
 import * as grid from './grid';
 import utils from '../util';
-import { Direction } from './agent';
+import { Direction, GameAgent } from './agent';
 
 /**
  * A type to represent a serialized board for transportation.
  */
 export type SerializedBoardGrid = {
     rows: number[][],
-    score: number,
+    score: number
 };
 
 export type Manipulator<T> = (i: T) => T;
@@ -83,19 +83,77 @@ export default class BoardGrid {
         return output;
     }
 
+    public getYCount(): number {
+        return this.rows.length;
+    }
+
+    public getXCount(): number {
+        return this.rows[0].length;
+    }
+
     /**
      * An iterator over a certain vertical or horizontal line drawn across the game grid. Useful for rotating the board.
      * Example: `board.getIterator(Direction.RIGHT, {x: 0, y: 0})`
      *
      * @param {Direction} dir The direction to go from the initial coordinate
      * @param {Coordinate} coord The initial position of the iteration, inclusive
-     * @returns {Iterable<grid.Cell>} An iterator abiding by the given start position and direction
+     * @returns {Iterator<grid.Cell>} An iterator abiding by the given start position and direction
      * @memberof BoardGrid
      */
-    public *getIterator(dir: Direction, coord: grid.Coordinate): Iterable<grid.Cell> {
+    public *getIterator(dir: Direction, coord: grid.Coordinate): Iterator<grid.Cell> {
         while (this.isCoordInRange(coord)) {
             yield this.uncheckedGetCellAt(coord);
             coord = BoardGrid.VecIt.get(dir)(coord);
+        }
+    }
+
+    public getRotatedClockwise(): SerializedBoardGrid {
+        // Clockwise: Bottom to Top, Left to Right
+        return this.rotated(
+            (rows: number[][], x: number) => rows[x] = utils.collect(this.getIterator(Direction.UP, {x, y: this.getYCount() - 1})).map(cell => cell.val()));
+    }
+
+    public getRotatedUnclockwise(): SerializedBoardGrid {
+        // Unclockwise (Counter-Clockwise): Top to Bottom, Right to Left
+        return this.rotated(
+            (rows: number[][], x: number) => rows[x] = utils.collect(this.getIterator(Direction.DOWN, {x: this.getXCount() - 1 - x, y: 0})).map(cell => cell.val()));
+    }
+
+    // WARNING: Makes changes to board dimensions if it's not a square
+    public rotateClockwise(): void {
+        let rotated = this.getRotatedClockwise();
+        this.rows = rotated.rows.map(grid.MatrixArray.from);
+    }
+
+    public rotateUnclockwise(): void {
+        let rotated = this.getRotatedUnclockwise();
+        this.rows = rotated.rows.map(grid.MatrixArray.from);
+    }
+
+    public move(direction: Direction): void {
+        switch (direction) {
+            case Direction.UP:
+                // For moving up, rotate clockwise once, move right, then rotate unclockwise once
+                this.rotateClockwise();
+                this.move(Direction.RIGHT);
+                this.rotateUnclockwise();
+                break;
+            case Direction.DOWN:
+                // For moving down, rotate unclockwise once, move right, then rotate clockwise once
+                this.rotateUnclockwise();
+                this.move(Direction.RIGHT);
+                this.rotateClockwise();
+                break;
+            case Direction.RIGHT:
+                for (let row of this.rows) {
+                    this.score += row.rotateRight();
+                }
+                break;
+            case Direction.LEFT:
+                for (let row of this.rows) {
+                    this.score += row.rotateLeft();
+                }
+                break;
         }
     }
 
@@ -103,6 +161,19 @@ export default class BoardGrid {
 
     private uncheckedGetCellAt(coord: grid.Coordinate): grid.Cell {
         return this.rows[coord.y][coord.x];
+    }
+
+    private rotated(rowManip: (rows: number[][], x: number) => void): SerializedBoardGrid {
+        let output: SerializedBoardGrid = {
+            // Get a fresh and empty board matching the dimensions of `this`, except X and Y swapped
+            rows: utils.arrayEmplace(() => new Array(this.getXCount()).fill(0), this.getYCount()),
+            score: this.score
+        };
+        for (let x = 0; x < this.getXCount(); ++x) {
+            // output.rows[x] = utils.collect(this.getIterator(Direction.UP, {x, y: this.getYCount() - 1})).map(cell => cell.val());
+            rowManip(output.rows, x);
+        }
+        return output;
     }
 
 }

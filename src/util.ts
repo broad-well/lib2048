@@ -13,6 +13,19 @@ namespace utils {
         }
         return output;
     }
+
+    export function collect<T>(iter: Iterator<T>): T[] {
+        let out: T[] = [];
+        while (true) {
+            let item = iter.next();
+            if (item.done) {
+                break;
+            }
+
+            out.push(item.value);
+        }
+        return out;
+    }
 }
 
 export default utils;
