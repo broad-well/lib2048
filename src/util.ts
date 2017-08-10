@@ -26,6 +26,13 @@ namespace utils {
         }
         return out;
     }
+
+    export function randomPick<T>(array: T[]): T {
+        if (array.length === 0) {
+            return null;
+        }
+        return array[Math.floor(Math.random() * array.length)];
+    }
 }
 
 export default utils;

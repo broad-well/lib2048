@@ -5,7 +5,7 @@
 
 import * as grid from './grid';
 import utils from '../util';
-import { Direction, GameAgent } from './agent';
+import { Direction, GameAgent, GameState } from './agent';
 
 /**
  * A type to represent a serialized board for transportation.
@@ -15,9 +15,19 @@ export type SerializedBoardGrid = {
     score: number
 };
 
+/**
+ * A type to represent a function that manipulates a variable of a given type and returns the changed value.
+ */
 export type Manipulator<T> = (i: T) => T;
 
-export default class BoardGrid {
+/**
+ * The BoardGrid module described in the Specification. Packs `MatrixArray`s and has the ability to rotate and move (up down left right) the board.
+ *
+ * @implements GameAgent
+ * @export
+ * @class BoardGrid
+ */
+export default class BoardGrid implements GameAgent {
 
     // For use with `getIterator`.
     // FIXME: TypeScript not supporting my idea of `{x, y} => {x + 1, y}` this time... Had to get verbose
@@ -36,18 +46,59 @@ export default class BoardGrid {
         }],
     ]);
 
+    /**
+     * Create a new empty BoardGrid.
+     *
+     * @static
+     * @returns {BoardGrid} The new BoardGrid
+     * @memberof BoardGrid
+     */
     public static newEmpty(): BoardGrid {
         return new BoardGrid(utils.arrayEmplace(grid.MatrixArray.newEmpty, grid.MATRIX_SIZE));
     }
 
+    /**
+     * Create a BoardGrid from a SerializedBoardGrid.
+     *
+     * @static
+     * @param {SerializedBoardGrid} ser The serialized BoardGrid to create this BoardGrid from
+     * @returns {BoardGrid} The deserialized BoardGrid
+     * @memberof BoardGrid
+     */
     public static deserialize(ser: SerializedBoardGrid): BoardGrid {
         return new BoardGrid(ser.rows.map(grid.MatrixArray.from), ser.score);
     }
 
     // STATIC ENDS
 
+    /**
+     * An array of MatrixArrays, each representing a row (horizontal) in the grid.
+     *
+     * @protected
+     * @type {grid.MatrixArray[]}
+     * @memberof BoardGrid
+     */
     protected rows: grid.MatrixArray[];
+
+    /**
+     * The current score of this game. Must be a positive integer or 0.
+     *
+     * @protected
+     * @type {number}
+     * @memberof BoardGrid
+     */
     protected score: number;
+
+    /**
+     * The current state of the game.
+     *
+     * @protected
+     * @type {GameState}
+     * @memberof BoardGrid
+     */
+    protected gameState: GameState = GameState.ONGOING;
+
+    public winValue: number = 11; // 2^11 = 2048
 
     protected constructor(rows: grid.MatrixArray[], score: number = 0) {
         this.rows = rows;
@@ -59,6 +110,17 @@ export default class BoardGrid {
             rows: this.rows.map(matrixArray => matrixArray.serialize()),
             score: this.score
         };
+    }
+
+    public clone(): BoardGrid {
+        return BoardGrid.deserialize(this.serialize());
+    }
+
+    public equals(other: BoardGrid): boolean {
+        return this.getXCount() === other.getXCount() &&
+            this.getYCount() === other.getYCount() &&
+            this.rows.every((row, index) => row.equals(other.rows[index])) &&
+            this.score === other.score;
     }
 
     public isCoordInRange(coord: grid.Coordinate): boolean {
@@ -131,6 +193,7 @@ export default class BoardGrid {
     }
 
     public move(direction: Direction): void {
+        const beforeMove = this;
         switch (direction) {
             case Direction.UP:
                 // For moving up, rotate clockwise once, move right, then rotate unclockwise once
@@ -155,12 +218,60 @@ export default class BoardGrid {
                 }
                 break;
         }
+
+        // If changes took place, then add new random
+        if (!this.equals(beforeMove)) {
+            this.addRandom();
+        }
+
+        this.updateGameState();
     }
 
+    public getScore(): number {
+        return this.score;
+    }
+
+    public getGameState(): GameState {
+        return this.gameState;
+    }
+
+    public getCells(): grid.Cell[][] {
+        return this.rows;
+    }
+
+    public isEmpty(): boolean {
+        return this.isEveryCell(cell => cell.isEmpty());
+    }
     // Private parts begin
 
     private uncheckedGetCellAt(coord: grid.Coordinate): grid.Cell {
         return this.rows[coord.y][coord.x];
+    }
+
+    private *allCellIterator(): Iterable<[grid.Cell, grid.Coordinate]> {
+        for (let y = 0; y < this.getYCount(); ++y) {
+            for (let x = 0; x < this.getXCount(); ++x) {
+                let coord = {x, y};
+                yield [this.uncheckedGetCellAt(coord), coord];
+            }
+        }
+    }
+
+    /**
+     * Checks if every cell in this grid satisfies the given check.
+     *
+     * @private
+     * @param {(cell: grid.Cell, coord: grid.Coordinate) => boolean} todo The check to run every cell against.
+     * @returns True if all checks return true; otherwise false.
+     * @memberof BoardGrid
+     */
+    private isEveryCell(todo: (cell: grid.Cell, coord: grid.Coordinate) => boolean) {
+        for (let [cell, coord] of this.allCellIterator()) {
+            if (!todo(cell, coord)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private rotated(rowManip: (rows: number[][], x: number) => void): SerializedBoardGrid {
@@ -176,4 +287,61 @@ export default class BoardGrid {
         return output;
     }
 
+    private isWon(): boolean {
+        for (let [cell, _] of this.allCellIterator()) {
+            if (cell.val() >= this.winValue) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private isLost(): boolean {
+        // If there are empty spots
+        if (!this.isEveryCell(cell => !cell.isEmpty())) {
+            return false;
+        }
+
+        // Utility function
+        function sameAfterMove(dir: Direction): boolean {
+            let copy = this.clone();
+            copy.move(dir);
+            return this.equals(copy);
+        }
+
+        // Move right and up, compare
+        return sameAfterMove(Direction.RIGHT) && sameAfterMove(Direction.UP);
+    }
+
+    private updateGameState() {
+        if (this.isWon()) {
+            this.gameState = GameState.WIN;
+        } else if (this.isLost()) {
+            this.gameState = GameState.LOSS;
+        } else {
+            this.gameState = GameState.ONGOING;
+        }
+    }
+
+    private addRandom(): boolean {
+        if (this.isEveryCell(cell => !cell.isEmpty())) {
+            return false;
+        }
+
+        // Populate all empty cells
+        const emptyCells: grid.Coordinate[] = [];
+        for (let [cell, coord] of this.allCellIterator()) {
+            if (cell.isEmpty()) {
+                emptyCells.push(coord);
+            }
+        }
+        const cellToPopulate = this.uncheckedGetCellAt(utils.randomPick(emptyCells));
+
+        // Simple way to simulate 80% chance 2, 20% chance 4
+        cellToPopulate.increment();
+        if (Math.random() > 0.8) {
+            cellToPopulate.increment();
+        }
+        return true;
+    }
 }

@@ -34,7 +34,7 @@ export interface GameAgent {
     move(direction: Direction): void;
     getGameState(): GameState;
     getScore(): number;
-    getCellAt(coord: Coordinate): Cell;
+    getCellAt?(coord: Coordinate): Cell;
     getCells(): Cell[][];
 }
 

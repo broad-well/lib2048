@@ -40,3 +40,9 @@ assert.deepEqual(MatrixArray.newEmpty(), MatrixArray.from([0, 0, 0, 0]));
     cell2.increment();
     assert.notDeepEqual(cell2, cell1, 'Cell.clone() does not create distinct copy');
 }
+
+// Test: Equality tests are legit
+{
+    const marray1 = MatrixArray.from([3, 5, 1, 4]);
+    assert(marray1.equals(MatrixArray.from([3, 5, 1, 4])), 'MatrixArray.equals does not work');
+}

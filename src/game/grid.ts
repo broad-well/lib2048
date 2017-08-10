@@ -263,6 +263,16 @@ export class MatrixArray extends Array<Cell> {
     public serialize(): number[] {
         return Array.from(this).map(cell => cell.val());
     }
+
+    /**
+     * Tests if this array is equal to another array.
+     * @param {number} other The other MatrixArray to compare this to
+     * @returns {boolean} True if the two arrays are equal, otherwise false
+     */
+    public equals(other: MatrixArray): boolean {
+        let oserialized = other.serialize();
+        return this.length === other.length && this.serialize().every((val: number, index: number) => oserialized[index] === val);
+    }
 }
 
 export type Coordinate = {
