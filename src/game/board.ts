@@ -192,39 +192,8 @@ export default class BoardGrid implements GameAgent {
         this.rows = rotated.rows.map(grid.MatrixArray.from);
     }
 
-    public move(direction: Direction): void {
-        const beforeMove = this;
-        switch (direction) {
-            case Direction.UP:
-                // For moving up, rotate clockwise once, move right, then rotate unclockwise once
-                this.rotateClockwise();
-                this.move(Direction.RIGHT);
-                this.rotateUnclockwise();
-                break;
-            case Direction.DOWN:
-                // For moving down, rotate unclockwise once, move right, then rotate clockwise once
-                this.rotateUnclockwise();
-                this.move(Direction.RIGHT);
-                this.rotateClockwise();
-                break;
-            case Direction.RIGHT:
-                for (let row of this.rows) {
-                    this.score += row.rotateRight();
-                }
-                break;
-            case Direction.LEFT:
-                for (let row of this.rows) {
-                    this.score += row.rotateLeft();
-                }
-                break;
-        }
-
-        // If changes took place, then add new random
-        if (!this.equals(beforeMove)) {
-            this.addRandom();
-        }
-
-        this.updateGameState();
+    public move(dir: Direction, addCell: boolean = true): void {
+        this.pMove(dir, addCell);
     }
 
     public getScore(): number {
@@ -303,14 +272,14 @@ export default class BoardGrid implements GameAgent {
         }
 
         // Utility function
-        function sameAfterMove(dir: Direction): boolean {
-            let copy = this.clone();
-            copy.move(dir);
-            return this.equals(copy);
+        function sameAfterMove(self: BoardGrid, dir: Direction): boolean {
+            let copy = self.clone();
+            copy.pMove(dir, false, false);
+            return self.equals(copy);
         }
 
         // Move right and up, compare
-        return sameAfterMove(Direction.RIGHT) && sameAfterMove(Direction.UP);
+        return sameAfterMove(this, Direction.RIGHT) && sameAfterMove(this, Direction.UP);
     }
 
     private updateGameState() {
@@ -343,5 +312,42 @@ export default class BoardGrid implements GameAgent {
             cellToPopulate.increment();
         }
         return true;
+    }
+
+    private pMove(direction: Direction, addCell: boolean = true, updateState: boolean = true): void {
+        const beforeMove = this.clone();
+        switch (direction) {
+            case Direction.UP:
+                // For moving up, rotate clockwise once, move right, then rotate unclockwise once
+                this.rotateClockwise();
+                this.pMove(Direction.RIGHT, addCell, updateState);
+                this.rotateUnclockwise();
+                break;
+            case Direction.DOWN:
+                // For moving down, rotate unclockwise once, move right, then rotate clockwise once
+                this.rotateUnclockwise();
+                this.pMove(Direction.RIGHT, addCell, updateState);
+                this.rotateClockwise();
+                break;
+            case Direction.RIGHT:
+                for (let row of this.rows) {
+                    this.score += row.rotateRight();
+                }
+                break;
+            case Direction.LEFT:
+                for (let row of this.rows) {
+                    this.score += row.rotateLeft();
+                }
+                break;
+        }
+
+        // If changes took place, then add new random
+        if (!this.equals(beforeMove) && addCell) {
+            this.addRandom();
+        }
+
+        if (updateState) {
+            this.updateGameState();
+        }
     }
 }
