@@ -33,16 +33,16 @@ export default class BoardGrid implements GameAgent {
     // FIXME: TypeScript not supporting my idea of `{x, y} => {x + 1, y}` this time... Had to get verbose
     public static VecIt: Map<Direction, Manipulator<grid.Coordinate>> = new Map([
         [Direction.UP, function({x, y}: grid.Coordinate): grid.Coordinate {
-            return {x: x, y: y - 1};
+            return {x, y: y - 1};
         }],
         [Direction.DOWN, function({x, y}: grid.Coordinate): grid.Coordinate {
-            return {x: x, y: y + 1};
+            return {x, y: y + 1};
         }],
         [Direction.LEFT, function({x, y}: grid.Coordinate): grid.Coordinate {
-            return {x: x - 1, y: y};
+            return {x: x - 1, y};
         }],
         [Direction.RIGHT, function({x, y}: grid.Coordinate): grid.Coordinate {
-            return {x: x + 1, y: y};
+            return {x: x + 1, y};
         }],
     ]);
 
