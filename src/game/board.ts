@@ -103,6 +103,7 @@ export default class BoardGrid implements GameAgent {
     protected constructor(rows: grid.MatrixArray[], score: number = 0) {
         this.rows = rows;
         this.score = score;
+        this.updateGameState();
     }
 
     public serialize(): SerializedBoardGrid {
@@ -113,7 +114,11 @@ export default class BoardGrid implements GameAgent {
     }
 
     public clone(): BoardGrid {
-        return BoardGrid.deserialize(this.serialize());
+        let newBg = BoardGrid.newEmpty();
+        newBg.rows = this.rows.map(array => grid.MatrixArray.from(array.serialize()));
+        newBg.score = this.score;
+        newBg.gameState = this.gameState;
+        return newBg;
     }
 
     public equals(other: BoardGrid): boolean {

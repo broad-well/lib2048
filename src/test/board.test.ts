@@ -5,7 +5,7 @@
 
 import BoardGrid from '../game/board';
 import { MATRIX_SIZE } from '../game/grid';
-import { Direction } from '../game/agent';
+import { Direction, GameState } from '../game/agent';
 import * as assert from 'assert';
 import * as unit from 'nodeunit';
 
@@ -228,4 +228,60 @@ export function movesAreCorrect(test: unit.Test) {
     test.done();
 }
 
-// TODO: more tests coming
+export function gameStateDetectionCorrect(test: unit.Test) {
+    test.expect(3);
+
+    const sBoard = {
+        rows: [
+            [10, 10, 0, 0],
+            [9, 1, 2, 3],
+            [1, 4, 1, 4],
+            [4, 1, 4, 1]
+        ],
+        score: 0
+    };
+
+    const board = BoardGrid.deserialize(sBoard);
+    test.equal(board.getGameState(), GameState.ONGOING, 'GameState not ONGOING');
+
+    board.move(Direction.RIGHT);
+    test.equal(board.getGameState(), GameState.WIN, 'GameState not WIN');
+
+    const s2Board = {
+        rows: [
+            [4, 1, 1, 5],
+            [9, 1, 2, 3],
+            [1, 4, 1, 4],
+            [4, 1, 4, 1]
+        ],
+        score: 0
+    };
+
+    const board2 = BoardGrid.deserialize(s2Board);
+    board2.move(Direction.LEFT);
+
+    test.equal(board2.getGameState(), GameState.LOSS, 'GameState not LOSS');
+
+    test.done();
+}
+
+export function scoreCorrect(test: unit.Test) {
+    test.expect(1);
+
+    // Based on real scenario
+    const ser1 = {
+        rows: [
+            [1, 2, 3, 1],
+            [2, 3, 2, 0],
+            [2, 3, 5, 6],
+            [3, 4, 6, 7]
+        ],
+        score: 1616
+    };
+
+    const board1 = BoardGrid.deserialize(ser1);
+    board1.move(Direction.DOWN, false);
+
+    test.equal(board1.getScore(), 1640);
+    test.done();
+}

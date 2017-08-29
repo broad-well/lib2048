@@ -9,6 +9,8 @@
 
 ## Module Structures
 
+**Interface**: `GameAgent` _(Defines the interface of all game providers, both in code and online)_
+
 - `GameEmu` _(Self-sustained 2048 implementation)_
     - `BoardGrid` _(Smart grid containing all cells)_
         - `MatrixArray` _(Smart row of cells capable of performing 2048 folds)_
@@ -29,5 +31,4 @@
     - `ML` _(Machine Learning)_
         - `NeuralNet` _(A ML model)_
 
-Note that more AI submodules are to be added in the future.
-
+Note that more AI submodules are to be added.
