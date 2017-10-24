@@ -170,11 +170,11 @@ export default class BoardGrid implements GameAgent {
      * Returns the cell at the given coordinate on this GridMap, if the coordinate is valid.
      * 
      * @param {grid.Coordinate} coord The coordinate of the querying cell
-     * @returns {(grid.Cell | null)} The cell at the given coordinate on this board if the coordinate is valid, otherwise null
+     * @returns {(number | null)} The value of the cell at the given coordinate on this board if the coordinate is valid, otherwise null
      * @memberof BoardGrid
      */
-    public getCellAt(coord: grid.Coordinate): grid.Cell | null {
-        return this.isCoordValid(coord) ? this.uncheckedGetCellAt(coord) : null;
+    public getCellAt(coord: grid.Coordinate): number | null {
+        return this.isCoordValid(coord) ? this.uncheckedGetCellAt(coord).val() : null;
     }
 
     /**
@@ -268,8 +268,8 @@ export default class BoardGrid implements GameAgent {
         return this.gameState;
     }
 
-    public getCells(): grid.Cell[][] {
-        return this.rows;
+    public getCells(): number[][] {
+        return this.rows.map(row => row.map(cell => cell.val()));
     }
 
     public isEmpty(): boolean {

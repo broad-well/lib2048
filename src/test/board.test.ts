@@ -101,9 +101,9 @@ export function getCellAtWorks(test: unit.Test) {
     };
 
     const board = BoardGrid.deserialize(sbg);
-    test.equal(board.getCellAt({x: 0, y: 0}).val(), 0, 'getCellAt x=0 y=0 is not 0');
-    test.equal(board.getCellAt({x: 2, y: 3}).val(), 0, 'getCellAt x=2 y=3 is not 0');
-    test.equal(board.getCellAt({x: 3, y: 2}).val(), 1, 'getCellAt x=3 y=2 is not 1');
+    test.equal(board.getCellAt({x: 0, y: 0}), 0, 'getCellAt x=0 y=0 is not 0');
+    test.equal(board.getCellAt({x: 2, y: 3}), 0, 'getCellAt x=2 y=3 is not 0');
+    test.equal(board.getCellAt({x: 3, y: 2}), 1, 'getCellAt x=3 y=2 is not 1');
     test.equal(board.getCellAt({x: -1, y: 2}), null, 'getCellAt with negative coordinate not null');
 
     test.done();

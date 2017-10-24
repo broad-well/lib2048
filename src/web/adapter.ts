@@ -7,9 +7,6 @@
 
 import GameAgent from '../game/agent';
 
-interface SiteAdapter extends GameAgent {
-    constructor(htmlRoot: Document): SiteAdapter;
-
+export default interface SiteAdapter extends GameAgent {
     setHtmlDocument(doc: Document): void;
-    getHtmlDocument(): Document;
 }
