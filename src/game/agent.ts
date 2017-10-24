@@ -1,3 +1,8 @@
+// Copyright (c) 2017 Michael P
+//
+// This software is released under the MIT License.
+// https://opensource.org/licenses/MIT
+
 // GameAgent abstract class
 import { Coordinate, Cell } from './grid';
 
@@ -25,7 +30,7 @@ export enum GameState {
 
 /**
  * An interface as described in _Lib2048 Specification_ to represent an agent to a 2048 game logic provider.
- * This interface is implemented by `GameEmu` and `WebInjector`.
+ * This interface is implemented by `BoardGrid` and `WebInjector`.
  *
  * @export
  * @interface GameAgent

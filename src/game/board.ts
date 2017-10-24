@@ -98,6 +98,13 @@ export default class BoardGrid implements GameAgent {
      */
     protected gameState: GameState = GameState.ONGOING;
 
+    /**
+     * The target value of the game. When two to the power of this value is reached, the game is considered to be won.
+     * The reference value for this variable is 11, since 2^11 = 2048.
+     * 
+     * @type {number}
+     * @memberof BoardGrid
+     */
     public winValue: number = 11; // 2^11 = 2048
 
     protected constructor(rows: grid.MatrixArray[], score: number = 0) {
@@ -106,6 +113,12 @@ export default class BoardGrid implements GameAgent {
         this.updateGameState();
     }
 
+    /**
+     * Converts this BoardGrid into a JSON-convertible object, whose structure is declared in {@see SerializedBoardGrid}
+     * 
+     * @returns {SerializedBoardGrid} The output of the conversion
+     * @memberof BoardGrid
+     */
     public serialize(): SerializedBoardGrid {
         return {
             rows: this.rows.map(matrixArray => matrixArray.serialize()),
@@ -113,6 +126,12 @@ export default class BoardGrid implements GameAgent {
         };
     }
 
+    /**
+     * Creates an independent BoardGrid object from the contents of this BoardGrid.
+     * 
+     * @returns {BoardGrid} The clone
+     * @memberof BoardGrid
+     */
     public clone(): BoardGrid {
         let newBg = BoardGrid.newEmpty();
         newBg.rows = this.rows.map(array => grid.MatrixArray.from(array.serialize()));
@@ -121,6 +140,13 @@ export default class BoardGrid implements GameAgent {
         return newBg;
     }
 
+    /**
+     * Compares this BoardGrid to another.
+     * 
+     * @param {BoardGrid} other The BoardGrid to compare this to
+     * @returns {boolean} True if this and the other BoardGrid are equal
+     * @memberof BoardGrid
+     */
     public equals(other: BoardGrid): boolean {
         return this.getXCount() === other.getXCount() &&
             this.getYCount() === other.getYCount() &&
@@ -128,14 +154,35 @@ export default class BoardGrid implements GameAgent {
             this.score === other.score;
     }
 
-    public isCoordInRange(coord: grid.Coordinate): boolean {
-        return coord.y < this.rows.length && coord.y >= 0 && this.rows[coord.y].isIndexInRange(coord.x);
+    /**
+     * Checks if the given grid coordinate is valid.
+     * 
+     * @param {grid.Coordinate} coord The coordinate to check
+     * @returns {boolean} True if the given coordinate is valid
+     * @memberof BoardGrid
+     */
+    public isCoordValid(coord: grid.Coordinate): boolean {
+        return coord.x % 1 === 0 && coord.y % 1 === 0 &&
+                (coord.y < this.rows.length && coord.y >= 0 && this.rows[coord.y].isIndexInRange(coord.x));
     }
 
-    public getCellAt?(coord: grid.Coordinate): grid.Cell {
-        return this.isCoordInRange(coord) ? this.uncheckedGetCellAt(coord) : null;
+    /**
+     * Returns the cell at the given coordinate on this GridMap, if the coordinate is valid.
+     * 
+     * @param {grid.Coordinate} coord The coordinate of the querying cell
+     * @returns {(grid.Cell | null)} The cell at the given coordinate on this board if the coordinate is valid, otherwise null
+     * @memberof BoardGrid
+     */
+    public getCellAt(coord: grid.Coordinate): grid.Cell | null {
+        return this.isCoordValid(coord) ? this.uncheckedGetCellAt(coord) : null;
     }
 
+    /**
+     * Returns all coordinates at which the cell (on this BoardGrid) is empty.
+     * 
+     * @returns {grid.Coordinate[]} An array of the coordinates at which the cells are empty.
+     * @memberof BoardGrid
+     */
     public getEmptyCells(): grid.Coordinate[] {
         let output: grid.Coordinate[] = [];
 
@@ -150,10 +197,22 @@ export default class BoardGrid implements GameAgent {
         return output;
     }
 
+    /**
+     * Returns the amount of rows this BoardGrid has.
+     * 
+     * @returns {number} The length of this.rows
+     * @memberof BoardGrid
+     */
     public getYCount(): number {
         return this.rows.length;
     }
 
+    /**
+     * Returns the amount of columns this BoardGrid has.
+     * 
+     * @returns {number} The length of an element in this.rows
+     * @memberof BoardGrid
+     */
     public getXCount(): number {
         return this.rows[0].length;
     }
@@ -168,7 +227,7 @@ export default class BoardGrid implements GameAgent {
      * @memberof BoardGrid
      */
     public *getIterator(dir: Direction, coord: grid.Coordinate): Iterator<grid.Cell> {
-        while (this.isCoordInRange(coord)) {
+        while (this.isCoordValid(coord)) {
             yield this.uncheckedGetCellAt(coord);
             coord = BoardGrid.VecIt.get(dir)(coord);
         }

@@ -80,10 +80,10 @@ export function isCoordInRangeWorks(test: unit.Test) {
     test.expect(4);
 
     const board = BoardGrid.newEmpty();
-    test.ok(board.isCoordInRange({x: MATRIX_SIZE - 2, y: MATRIX_SIZE - 1}), 'Matrix size less than two?');
-    test.ok(!board.isCoordInRange({x: -1, y: MATRIX_SIZE - 1}), 'Negative numbers are in range?');
-    test.ok(!board.isCoordInRange({x: MATRIX_SIZE, y: 0}), `Matrix size (${MATRIX_SIZE}) is in range?`);
-    test.ok(!board.isCoordInRange({y: MATRIX_SIZE, x: 0}), `Matrix size (${MATRIX_SIZE}) is in range?`);
+    test.ok(board.isCoordValid({x: MATRIX_SIZE - 2, y: MATRIX_SIZE - 1}), 'Matrix size less than two?');
+    test.ok(!board.isCoordValid({x: -1, y: MATRIX_SIZE - 1}), 'Negative numbers are in range?');
+    test.ok(!board.isCoordValid({x: MATRIX_SIZE, y: 0}), `Matrix size (${MATRIX_SIZE}) is in range?`);
+    test.ok(!board.isCoordValid({y: MATRIX_SIZE, x: 0}), `Matrix size (${MATRIX_SIZE}) is in range?`);
     test.done();
 }
 
