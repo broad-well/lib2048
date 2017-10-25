@@ -16,6 +16,10 @@ const uglify = require('gulp-uglify');
 // Legacy
 const babel = require('gulp-babel');
 
+// ES6 Module Concatenation for Webpage Injection
+const rollup = require('rollup');
+const rollupTs = require('rollup-plugin-typescript2');
+
 gulp.task('lint', function() {
     return gulp.src('src/**/*.ts')
         .pipe(tslint({
@@ -39,4 +43,18 @@ gulp.task('compile', function() {
         .pipe(tsProject());
 
     return tsResult.js.pipe(gulp.dest('out'));
+});
+
+gulp.task('rollup', async function() {
+    const bundle = await rollup.rollup({
+        input: './src/web/adapter.ts',
+        plugins: [
+            rollupTs()
+        ]
+    });
+
+    await bundle.write({
+        file: './out/inject.js',
+        format: 'umd'
+    });
 });

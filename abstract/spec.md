@@ -18,7 +18,7 @@
 - `WebInjector` _(Interface to the web (i.e. original) version of 2048, including some of its derivatives such as Doge2048)_
     - **Interface**: `SiteAdapter` _(Defines the interface of all independent adapters of variation websites)_
     - `VanillaAdapter` _(Adapts to the gabrielecirulli.github.io version of 2048)_
-    - `DogeAdapter` _(Adapts to the Doge2048 website, which seems to use an outdated version for the core 2048 game logic)_
+    - `DogeAdapter` _(Adapts to the Doge2048 website, which seems to use an outdated or simplified version for the core 2048 game logic)_
 
 - `CLI` _(provides an interface to `GameEmu` for human players)_
     - `InputManager` _(Deals with the Node.js Console input API)_

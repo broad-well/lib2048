@@ -161,7 +161,7 @@ export function rotateWorks(test: unit.Test) {
 }
 
 export function movesAreCorrect(test: unit.Test) {
-    test.expect(5);
+    test.expect(6);
 
     const origin = {
         rows: [
@@ -224,6 +224,20 @@ export function movesAreCorrect(test: unit.Test) {
     dFullBoard.move(Direction.RIGHT);
 
     test.deepEqual(dFullBoard.serialize().rows, fullBoard.rows);
+
+    const cannotMoveRightBoard = {
+        rows: [
+            [0, 0, 2, 3],
+            [0, 1, 4, 3],
+            [0, 0, 2, 1],
+            [0, 3, 1, 4]
+        ],
+        score: 0
+    };
+    const dCannotMoveRightBoard = BoardGrid.deserialize(cannotMoveRightBoard);
+    dCannotMoveRightBoard.move(Direction.RIGHT);
+
+    test.deepEqual(dCannotMoveRightBoard.serialize().rows, cannotMoveRightBoard.rows, 'Random cells should not be added to board if move is ineffective');
 
     test.done();
 }

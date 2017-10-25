@@ -107,6 +107,15 @@ export default class BoardGrid implements GameAgent {
      */
     public winValue: number = 11; // 2^11 = 2048
 
+    /**
+     * The amount of cells to populate the board when reseting (restarting) it. The number is 2 in
+     * most games of 2048.
+     *
+     * @type {number}
+     * @memberof BoardGrid
+     */
+    public initialPopulateCount: number = 2;
+
     protected constructor(rows: grid.MatrixArray[], score: number = 0) {
         this.rows = rows;
         this.score = score;
@@ -275,6 +284,18 @@ export default class BoardGrid implements GameAgent {
     public isEmpty(): boolean {
         return this.isEveryCell(cell => cell.isEmpty());
     }
+
+    public reset(): void {
+        for (let [cell, _] of this.allCellIterator()) {
+            cell.clear();
+        }
+        for (let i = 0; i < this.initialPopulateCount; ++i) {
+            this.addRandom();
+        }
+        this.score = 0;
+        this.gameState = GameState.ONGOING;
+    }
+
     // Private parts begin
 
     private uncheckedGetCellAt(coord: grid.Coordinate): grid.Cell {
