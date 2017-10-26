@@ -26,6 +26,7 @@
   "homepage": "https://github.com/broad-well/lib2048#readme",
   "devDependencies": {
     "@types/nodeunit": "0.0.30",
+    "@types/synaptic": "^1.0.3",
     "assert": "^1.4.1",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
@@ -35,6 +36,9 @@
     "gulp-uglify": "^2.1.2",
     "nodeunit": "^0.11.1",
     "rollup": "^0.50.0",
+    "rollup-plugin-commonjs": "^8.2.4",
+    "rollup-plugin-minify-es": "^1.1.1",
+    "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-typescript2": "^0.7.0",
     "tslint": "^5.0.0",
     "typedoc": "^0.5.10"
@@ -42,6 +46,7 @@
   "dependencies": {
     "@types/node": "^7.0.12",
     "babel": "^6.23.0",
+    "synaptic": "^1.1.4",
     "typescript": "^2.2.2"
   }
 }

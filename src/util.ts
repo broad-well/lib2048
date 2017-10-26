@@ -33,6 +33,18 @@ namespace utils {
         }
         return array[Math.floor(Math.random() * array.length)];
     }
+
+    export function repeatInterval(times: number, doThis: (epoch: number) => any): number {
+        let count = 0;
+        const interval = setInterval(() => {
+            ++count;
+            doThis(count);
+            if (count >= times) {
+                clearInterval(interval);
+            }
+        });
+        return interval;
+    }
 }
 
 export default utils;

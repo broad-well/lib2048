@@ -103,6 +103,10 @@ export default class Vanilla2048 implements SiteAdapter {
         this.game.restart();
     }
 
+    public getEmptyCells(): Coordinate[] {
+        return this.game.grid.availableCells();
+    }
+
     private inject(): void {
         (document as any).adapter = this;
 

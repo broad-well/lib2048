@@ -101,7 +101,7 @@ export default class BoardGrid implements GameAgent {
     /**
      * The target value of the game. When two to the power of this value is reached, the game is considered to be won.
      * The reference value for this variable is 11, since 2^11 = 2048.
-     * 
+     *
      * @type {number}
      * @memberof BoardGrid
      */
@@ -124,7 +124,7 @@ export default class BoardGrid implements GameAgent {
 
     /**
      * Converts this BoardGrid into a JSON-convertible object, whose structure is declared in {@see SerializedBoardGrid}
-     * 
+     *
      * @returns {SerializedBoardGrid} The output of the conversion
      * @memberof BoardGrid
      */
@@ -137,7 +137,7 @@ export default class BoardGrid implements GameAgent {
 
     /**
      * Creates an independent BoardGrid object from the contents of this BoardGrid.
-     * 
+     *
      * @returns {BoardGrid} The clone
      * @memberof BoardGrid
      */
@@ -151,7 +151,7 @@ export default class BoardGrid implements GameAgent {
 
     /**
      * Compares this BoardGrid to another.
-     * 
+     *
      * @param {BoardGrid} other The BoardGrid to compare this to
      * @returns {boolean} True if this and the other BoardGrid are equal
      * @memberof BoardGrid
@@ -165,7 +165,7 @@ export default class BoardGrid implements GameAgent {
 
     /**
      * Checks if the given grid coordinate is valid.
-     * 
+     *
      * @param {grid.Coordinate} coord The coordinate to check
      * @returns {boolean} True if the given coordinate is valid
      * @memberof BoardGrid
@@ -177,7 +177,7 @@ export default class BoardGrid implements GameAgent {
 
     /**
      * Returns the cell at the given coordinate on this GridMap, if the coordinate is valid.
-     * 
+     *
      * @param {grid.Coordinate} coord The coordinate of the querying cell
      * @returns {(number | null)} The value of the cell at the given coordinate on this board if the coordinate is valid, otherwise null
      * @memberof BoardGrid
@@ -188,7 +188,7 @@ export default class BoardGrid implements GameAgent {
 
     /**
      * Returns all coordinates at which the cell (on this BoardGrid) is empty.
-     * 
+     *
      * @returns {grid.Coordinate[]} An array of the coordinates at which the cells are empty.
      * @memberof BoardGrid
      */
@@ -208,7 +208,7 @@ export default class BoardGrid implements GameAgent {
 
     /**
      * Returns the amount of rows this BoardGrid has.
-     * 
+     *
      * @returns {number} The length of this.rows
      * @memberof BoardGrid
      */
@@ -218,7 +218,7 @@ export default class BoardGrid implements GameAgent {
 
     /**
      * Returns the amount of columns this BoardGrid has.
-     * 
+     *
      * @returns {number} The length of an element in this.rows
      * @memberof BoardGrid
      */

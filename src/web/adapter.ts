@@ -15,5 +15,10 @@ export default interface SiteAdapter extends GameAgent {
 // ---
 
 import VanillaAdapter from './adapters/vanilla';
+import NeuralAI from '../ai/neural';
+
 const adapter = new VanillaAdapter(window);
 (window as any).adapter = adapter;
+const ai = new NeuralAI(4);
+ai.bind(adapter);
+(window as any).ai = ai;

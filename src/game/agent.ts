@@ -41,6 +41,7 @@ export interface GameAgent {
     getScore(): number;
     getCellAt(coord: Coordinate): number | null;
     getCells(): number[][];
+    getEmptyCells(): Coordinate[];
     reset(): void;
 }
 
