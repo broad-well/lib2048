@@ -60,7 +60,7 @@ gulp.task('rollup', async function() {
             }),
             rollupCjs({
                 namedExports: {
-                    'node_modules/synaptic/dist/synaptic.js': ['Architect', 'Trainer', 'Neuron']
+                    //'node_modules/synaptic/dist/synaptic.js': ['Architect', 'Trainer', 'Neuron']
                 }
             }),
             rollupUgly()
