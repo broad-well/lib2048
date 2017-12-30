@@ -39,7 +39,7 @@ const evaluationFactors: {[name: string]: EvaluationFactor} = {
     }
 };
 
-export default function evaluateState(state: SerializedBoardGrid, depth: number): number {
+export function evaluateState(state: SerializedBoardGrid): number {
     let result = 0;
 
     for (let factorName in evaluationFactors) {
@@ -47,7 +47,7 @@ export default function evaluateState(state: SerializedBoardGrid, depth: number)
         result += factor.weight * factor.evaluate(state);
     }
 
-    return result * (1.3 ** depth);
+    return result;
 }
 
 export function nextState(state: SerializedBoardGrid, action: Direction): SerializedBoardGrid {
@@ -94,4 +94,8 @@ export function *nextRandomAdditions(state: SerializedBoardGrid): Iterable<Seria
             yield clone;
         }
     }
+}
+
+export function serializedToString(grid: SerializedBoardGrid): number {
+    return parseInt(grid.rows.reduce((a, b) => a.concat(b), []).map(cell => cell.toString(16)).reduce((a, b) => a + b), 16);
 }

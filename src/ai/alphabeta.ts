@@ -1,5 +1,5 @@
 // Copyright (c) 2017 Michael P
-// 
+//
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
@@ -8,12 +8,15 @@
 import BoardGrid from '../game/board';
 import { SerializedBoardGrid } from '../game/board';
 import { GameState, Direction, GameAgent } from '../game/agent';
-import evaluator, { nextState, isTerminalState, getCurrentState, getNextActions, nextRandomAdditions } from './common';
+import { nextState, isTerminalState, getCurrentState, getNextActions, nextRandomAdditions, serializedToString, evaluateState } from './common';
 import GameUser from '../user';
 import { MATRIX_SIZE } from '../game/grid';
 
 // Setting: depth limit in alphabeta search
-let depthLimit = 4;
+let depthLimit = 5;
+
+// Memory: Avoid re-evaluating by storing scores in maps
+let treeMemory: {[boardRepr: number]: number} = {};
 
 // Adopted from Wikipedia article on AB pruning
 function alphaBeta(
@@ -24,7 +27,16 @@ function alphaBeta(
     isPlayerTurn: boolean
 ): number {
     if (depth <= 0 || isTerminalState(state)) {
-        return evaluator(state, depth);
+        const repr = serializedToString(state);
+        const memorized = treeMemory[repr];
+        if (memorized) {
+            return memorized;
+        }
+
+        // This is a new state, push into memory
+        const evaluation = evaluateState(state);
+        treeMemory[repr] = evaluation;
+        return evaluation;
     }
 
     if (isPlayerTurn) {
@@ -32,8 +44,9 @@ function alphaBeta(
         for (let direction of getNextActions(state)) {
             v = Math.max(v, alphaBeta(nextState(state, direction), depth - 1, alpha, beta, false));
             alpha = Math.max(alpha, v);
-            if (beta <= alpha)
+            if (beta <= alpha) {
                 break;
+            }
         }
         return v;
     } else {
@@ -41,8 +54,9 @@ function alphaBeta(
         for (let nextState of nextRandomAdditions(state)) {
             v = Math.min(v, alphaBeta(nextState, depth - 1, alpha, beta, true));
             beta = Math.min(beta, v);
-            if (beta <= alpha)
+            if (beta <= alpha) {
                 break;
+            }
         }
         return v;
     }
@@ -70,7 +84,14 @@ export default class AlphaBeta implements GameUser {
     start() {
         this.executor = setInterval(() => {
             const moveChoice = choose(getCurrentState(this.agent));
-            this.agent.move(moveChoice);
+
+            // Do not lag the browser window if we're controlling that
+            if (window) {
+                window.requestAnimationFrame(() => this.agent.move(moveChoice));
+            } else {
+                this.agent.move(moveChoice);
+            }
+
             // Done?
             if (this.agent.getGameState() !== GameState.ONGOING) {
                 this.stop();
@@ -79,7 +100,15 @@ export default class AlphaBeta implements GameUser {
     }
 
     stop() {
-        clearInterval(this.executor as number);
+        if (typeof this.executor === 'number') {
+            clearInterval(this.executor as number);
+        }
+        else if (this.executor === null) {
+            return;
+        }
+        else {
+            clearInterval(this.executor as NodeJS.Timer);
+        }
     }
 
     reset() {

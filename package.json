@@ -45,8 +45,10 @@
   },
   "dependencies": {
     "@types/node": "^7.0.12",
+    "@types/table": "^4.0.4",
     "babel": "^6.23.0",
     "synaptic": "^1.1.4",
+    "table": "^4.0.2",
     "typescript": "^2.2.2"
   }
 }

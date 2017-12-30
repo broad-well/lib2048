@@ -63,7 +63,7 @@ gulp.task('rollup', async function() {
                     //'node_modules/synaptic/dist/synaptic.js': ['Architect', 'Trainer', 'Neuron']
                 }
             }),
-            rollupUgly()
+            //rollupUgly()
         ]
     });
 
